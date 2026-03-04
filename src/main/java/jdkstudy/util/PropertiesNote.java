@@ -1,6 +1,10 @@
 package jdkstudy.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -56,7 +60,33 @@ public class PropertiesNote {
 
         // 获取属性
         String url = props.getProperty("db.url");
-        String url2 = props.get("db.url").toString();
-        System.out.println("数据库URL: " + url);
+        System.out.println("数据库修改之前URL: " + url);
+
+        // 修改属性
+        props.setProperty("db.url", "jdbc:mysql://localhost:3306/test");
+        url = props.getProperty("db.url");
+        System.out.println("数据库修改之后URL: " + url);
+
+        // 保存属性到 src/main/resources目录下的 app2.properties
+        // 1. 获取项目根目录
+        String userDir = System.getProperty("user.dir");
+        
+        // 2. 构建 src/main/resources 的绝对路径
+        File resourcesDir = new File(userDir, "src/main/resources");
+        
+        // 3. 确保目录存在
+        if (!resourcesDir.exists()) {
+            resourcesDir.mkdirs();
+        }
+        
+        // 4. 创建目标文件对象
+        File targetFile = new File(resourcesDir, "app2.properties");
+        
+        // 5. 保存文件 (使用 OutputStreamWriter 支持 UTF-8 编码，避免中文乱码)
+        try (OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(targetFile), StandardCharsets.UTF_8)) {
+            props.store(writer, "Modified configuration file");
+            System.out.println("文件已保存至：" + targetFile.getAbsolutePath());
+        }
     }
 }
